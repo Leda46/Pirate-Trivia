@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pirate Trivia Quiz</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #001f3f;
+            color: #ffffff;
+        }
+        .quiz-container {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 400px;
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #002f5f;
+        }
+        button {
+            background-color: #6d4c2d;
+            color: #ffd700;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #timer {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #ddd;
+        }
+        .progress-bar div {
+            height: 20px;
+            width: 0;
+            background-color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pirate Trivia Quiz</h1>
+    <div class="quiz-container">
+        <p id="question">Loading...</p>
+        <button id="answer1"></button>
+        <button id="answer2"></button>
+        <button id="answer3"></button>
+        <button id="answer4"></button>
+        <p id="score">Score: 0</p>
+        <div id="timer">Time left: 10</div>
+        <div class="progress-bar"><div id="progress"></div></div>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "What is the name of a pirate's flag?",
+                answers: ["Blackbeard", "Jolly Roger", "Golden Skull", "Sea Banner"],
+                correct: 1
+            },
+           
+            {
+                question: "What is a pirate's typical weapon of choice?",
+                answers: ["Sword", "Gun", "Cutlass", "Trident"],
+                correct: 2
+            },
+            {
+                question: "Which pirate was famously known as 'Blackbeard'?",
+                answers: ["Edward Teach", "Bartholomew Roberts", "Henry Morgan", "Anne Bonny"],
+                correct: 0
+            },
+            {   
+                question: "What was the name of the pirate ship captained by Blackbeard?",
+                answers: ["Queen Anne's Revenge", "The Flying Dutchman", "The Sea Serpent", "The Black Pearl"],
+                correct: 0
+            },
+            {
+                question: "Which island is known as 'The Pirate's Paradise'?",
+                answers: ["Tortuga", "Nassau", "Treasure Island", "Cuba"],
+                correct: 1
+            },
+            {
+                question: "Which movie features the character Captain Jack Sparrow?",
+                answers: ["Pirates of the Caribbean", "The Buccaneer", "Treasure Island", "Blackbeard's Ghost"],
+                correct: 0
+            },
+           
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 10;
+        let timerInterval;
+        let highScore = 0;
+
+        const questionEl = document.getElementById("question");
+        const answerButtons = [
+            document.getElementById("answer1"),
+            document.getElementById("answer2"),
+            document.getElementById("answer3"),
+            document.getElementById("answer4")
+        ];
+        const scoreEl = document.getElementById("score");
+        const timerEl = document.getElementById("timer");
+        const progressEl = document.getElementById("progress");
+
+        function loadQuestion() {
+    if (currentQuestion >= questions.length) {
+        questionEl.textContent = "Quiz Over!";
+        scoreEl.textContent = `Final Score: ${score}`;
+        answerButtons.forEach(button => button.style.display = "none");
+        return;
+    }
+    
+    const q = questions[currentQuestion];
+    questionEl.textContent = q.question;
+    
+    // Shuffle the answers and remember the correct answer's index in the shuffled list
+    const shuffledAnswers = shuffleArray([...q.answers]);
+    const correctAnswer = q.answers[q.correct];  // Correct answer from original list
+    const correctIndex = shuffledAnswers.indexOf(correctAnswer);  // Find the correct answer's new index after shuffle
+
+    // Update button text and click events
+    shuffledAnswers.forEach((answer, index) => {
+        answerButtons[index].textContent = answer;
+        
+        // Attach the correct index (not shuffled index) to each button's click event
+        answerButtons[index].onclick = () => checkAnswer(index, correctIndex);
+    });
+
+    // Reset and start the timer
+    timeLeft = 10;
+    timerEl.textContent = `Time left: ${timeLeft}`;
+    progressEl.style.width = `${(currentQuestion / questions.length) * 100}%`;
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+
+        function updateTimer() {
+            timeLeft--;
+            timerEl.textContent = `Time left: ${timeLeft}`;
+            if (timeLeft <= 0) {
+                checkAnswer(-1);  // Time's up
+            }
+        }
+
+        function checkAnswer(selectedIndex, correctIndex) {
+    // Check if the selected answer matches the original correct answer
+    if (selectedIndex === correctIndex) {
+        score += 10;
+        alert("Correct! Arrr!");
+    } else {
+        alert("Wrong! Try again!");
+    }
+
+    // Move to the next question or end the quiz
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+        loadQuestion();
+    } else {
+        progressEl.style.width = `100%`;
+        clearInterval(timerInterval);
+        questionEl.textContent = "Quiz Over!";
+        scoreEl.textContent = `Final Score: ${score}`;
+        answerButtons.forEach(button => button.style.display = "none");
+    }
+
+    // Update the score display
+    scoreEl.textContent = `Score: ${score}`;
+}
+
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];  // Swap
+            }
+            return array;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
+
