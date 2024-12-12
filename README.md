@@ -18,5 +18,5 @@ Technologies Used:
 - CSS3
 - JavaScript
 
-  [Pirate Trivia](https://github.com/user-attachments/assets/e8276e49-2bed-4c20-8bda-ad917b67d1b4)
+
 
